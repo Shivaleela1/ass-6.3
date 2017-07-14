@@ -1,0 +1,136 @@
+package practiceProg;
+
+public class Account {
+	
+   public static Account account;
+   private static int balance = 1000;
+   private static Person person;
+
+private Account() { //defining constructor
+}
+
+public static Account getAccount(Person p) {  
+    if (account == null) {
+        account = new Account();
+    }
+    Account.person = p;
+    return account;
+}
+
+public static int getBal() {   // to get the balance
+    return balance;
+}
+
+public synchronized void withdraw(int bal) {//method to implement withdraw functionality
+    try {
+
+        if (balance >= bal) {
+            System.out.println(person.getName() + " " + "is try to withdraw");
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            balance = balance - bal;
+            System.out.println(person.getName() + " " + "is complete the withdraw");
+        } else {
+            System.out.println(person.getName() + " " + "doesn't have enough money for withdraw ");
+        }
+        System.out.println(person.getName() + " " + " withdraw Rs." + balance);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+public synchronized void deposit(int bal) {//method to implement deposit functionality
+    try {
+        if (bal > 0) {
+            System.out.println(person.getName() + " " + " is try to deposit");
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            balance = balance + bal;
+            System.out.println(person.getName() + " " + "is complete the deposit");
+        } else {
+            System.out.println(person.getName() + " " + "doesn't have enough money for deposit");
+        }
+        System.out.println(person.getName() + " " + " deposit Rs." + balance);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+}
+
+
+package practiceProg;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class ThreadExercise extends Thread implements Runnable {
+
+private Person person;
+
+public ThreadExercise(Person p) {
+    this.person = p;
+}
+
+public static void main(String[] args) {
+
+    ThreadExercise ts1 = new ThreadExercise(new Person("person 1"));//creating objects
+    ts1.start();
+    ThreadExercise ts2 = new ThreadExercise(new Person("person 2"));
+    ts2.start();
+    ThreadExercise ts3 = new ThreadExercise(new Person("person 3"));
+    ts3.start();
+
+}
+
+@Override
+public void run() {//implementing run method
+    for (int i = 0; i < 3; i++) {
+        try {
+            Account acc = Account.getAccount(person);
+            acc.withdraw(100);
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ThreadExercise.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (acc.getBal() < 0) {
+                System.out.println("account is overdrawn!");
+            }
+            acc.deposit(200);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    System.out.println("Final Acc balance is Rs." + Account.getBal());
+}}
+
+
+package practiceProg;
+
+public class Person {
+private String name;
+
+//getters and setters
+public Person(String name) {
+    this.name = name;
+}
+
+public String getName() {
+    return name;
+}
+
+public void setName(String name) {
+    this.name = name;
+}
+
+@Override
+public String toString() {
+    return name;
+}}
